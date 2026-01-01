@@ -8,6 +8,11 @@ use App\Http\Controllers\AuthController;
 //     return $request->user();
 // })->middleware('auth:sanctum');
 
+
+
+Route::prefix('/api')
+    
+
 Route::group([
     'middleware' => 'api',
     'prefix' => 'auth'

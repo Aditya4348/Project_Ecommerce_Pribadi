@@ -21,5 +21,10 @@ class Product extends Model
         'featured',
     ];
 
+
+    public function review(){
+        return $this->hasMany(Review::class, 'product_id', 'id');
+    }
+
     
 }
