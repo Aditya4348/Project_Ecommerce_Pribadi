@@ -1,0 +1,8 @@
+{
+  "name": "Nexus Elite E-Commerce",
+  "description": "A premium, enterprise-grade e-commerce platform featuring a modern aesthetic, advanced filtering, AI-powered product assistance, and a comprehensive admin dashboard.",
+  "requestFramePermissions": [
+    "camera",
+    "geolocation"
+  ]
+}
