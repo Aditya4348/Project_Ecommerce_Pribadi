@@ -14,7 +14,7 @@ class ProductController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Product::query()->select('id', 'name', 'description', 'price', 'category', 'images');
+        $query = Product::query()->select('id', 'name', 'description', 'price', 'category', 'images', 'featured');
 
         // Filter Berdasarkan Category
         if ($request->category && $request->category !== 'all') {

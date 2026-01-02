@@ -20,7 +20,6 @@ return new class extends Migration
             $table->string('phone')->nullable();
             $table->text('address')->nullable();
             $table->enum('role', ['admin', 'customer'])->default('customer');
-            $table->string('remember_token')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });

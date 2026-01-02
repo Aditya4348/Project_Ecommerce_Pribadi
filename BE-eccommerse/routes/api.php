@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ProductController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
@@ -10,7 +11,9 @@ use App\Http\Controllers\AuthController;
 
 
 
-Route::prefix('/api')
+
+Route::get('products', [ProductController::class, 'index']);
+
     
 
 Route::group([

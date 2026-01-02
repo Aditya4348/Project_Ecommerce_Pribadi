@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('description')->nullable();
             $table->decimal('price');
             $table->json('category')->nullable();
-            $table->text('images')->nullable();
+            $table->json('images')->nullable();
             $table->integer('stock');
             $table->string('sku');
             $table->boolean('featured')->default(false);

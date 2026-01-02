@@ -7,11 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class Product extends Model
 {
-    /** @use HasFactory<\Database\Factories\ProductFactory> */
     use HasFactory;
 
     protected $fillable = [
         'name',
+        'slug',
         'description',
         'price',
         'category',
@@ -21,10 +21,16 @@ class Product extends Model
         'featured',
     ];
 
+    protected $casts = [
+        'images' => 'array',     // ✅ FIX
+        'category' => 'array',
+        'featured' => 'boolean',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+    ];
 
-    public function review(){
-        return $this->hasMany(Review::class, 'product_id', 'id');
+    public function review()
+    {
+        return $this->hasMany(Review::class);
     }
-
-    
 }

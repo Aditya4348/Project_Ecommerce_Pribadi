@@ -5,6 +5,8 @@ import { ArrowRight, Star, ShieldCheck, Zap, Globe, Heart, ShoppingBag } from 'l
 import { MOCK_PRODUCTS } from '../constants';
 import { Product } from '../types';
 import { useTranslation } from '../context/LanguageContext';
+import { useProduct } from '@/context/ProductContext';
+import { formatRupiah } from '@/helpers/Formatings';
 
 interface HomeProps {
   onAddToCart: (product: Product) => void;
@@ -12,9 +14,20 @@ interface HomeProps {
 
 const Home: React.FC<HomeProps> = ({ onAddToCart }) => {
   const { t } = useTranslation();
+  const { products } = useProduct();
   
-  const featured = MOCK_PRODUCTS.filter(p => p.featured).slice(0, 4);
-  const newArrivals = MOCK_PRODUCTS.slice(0, 4);
+  console.log("products", products)
+  
+
+  const featured = products
+  .filter(p => p.featured === true)
+  .slice(0, 4);
+  const newArrivals = products.slice(0, 4);
+
+  // const images = JSON.parse(featured.images || newArrivals.images);
+
+  console.log("featured", featured);
+  console.log("newArrivals", newArrivals);
 
   return (
     <div className="animate-in fade-in duration-700">
@@ -75,7 +88,7 @@ const Home: React.FC<HomeProps> = ({ onAddToCart }) => {
                 <div className="relative aspect-[4/5] rounded-2xl md:rounded-[2rem] overflow-hidden bg-slate-50 shadow-sm transition-all duration-500 hover:shadow-xl">
                   <Link to={`/product/${product.id}`} className="block w-full h-full">
                     <img 
-                      src={product.image} 
+                      src={product.images[0]} 
                       alt={product.name} 
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000" 
                     />
@@ -93,11 +106,11 @@ const Home: React.FC<HomeProps> = ({ onAddToCart }) => {
                   </div>
                 </div>
                 <div className="mt-4 space-y-1">
-                  <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">{product.category}</p>
+                  <p className="text-[9px] font-bold text-slate-400 uppercase tracking-widest">{product.category?.name ?? '-'}</p>
                   <h3 className="font-bold text-slate-900 text-sm md:text-base group-hover:text-emerald-600 transition-colors truncate">
                     <Link to={`/product/${product.id}`}>{product.name}</Link>
                   </h3>
-                  <p className="font-bold text-sm md:text-lg">${product.price}</p>
+                  <p className="font-bold text-sm md:text-lg">{formatRupiah(product.price)}</p>
                 </div>
               </div>
             ))}
@@ -155,13 +168,13 @@ const Home: React.FC<HomeProps> = ({ onAddToCart }) => {
               <div key={product.id} className="bg-white rounded-2xl md:rounded-[2.5rem] p-3 md:p-5 group transition-all duration-500 hover:shadow-xl border border-slate-100">
                 <div className="relative aspect-square rounded-xl md:rounded-2xl overflow-hidden bg-slate-50 mb-4 md:mb-6">
                   <Link to={`/product/${product.id}`} className="block w-full h-full">
-                    <img src={product.image} alt={product.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                    <img src={product.images[0]} alt={product.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
                   </Link>
                 </div>
                 <div className="px-1">
                   <div className="flex justify-between items-start mb-4">
                     <div className="flex-1 min-w-0">
-                      <p className="text-[9px] font-bold text-emerald-600 uppercase tracking-widest truncate">{product.category}</p>
+                      <p className="text-[9px] font-bold text-emerald-600 uppercase tracking-widest truncate">{product.category?.name ?? '-'}</p>
                       <h3 className="font-bold text-slate-900 text-xs md:text-base truncate">
                         <Link to={`/product/${product.id}`}>{product.name}</Link>
                       </h3>

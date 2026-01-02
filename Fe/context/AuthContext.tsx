@@ -22,7 +22,6 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const navigate = useNavigate();
-  const [isBannedModalOpen, setIsBannedModalOpen] = useState(false);
   const queryClient = useQueryClient();
 
   // Gunakan React Query sebagai satu-satunya sumber data pengguna.
@@ -85,8 +84,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       console.error("Logout failed on server, but logging out client-side.", error);
     } finally {
       localStorage.removeItem('token');
-      delete api.defaults.headers.common['Authorization'];
-      setIsBannedModalOpen(false); // Sembunyikan modal saat logout
+      delete api.defaults.headers.common['Authorization']; // Sembunyikan modal saat logout
       queryClient.clear(); // Membersihkan semua cache saat logout
       toast.success('Logout Berhasil');
       window.location.href = '/'; // Paksa refresh halaman penuh saat logout
@@ -109,7 +107,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       updateUser,
       isLoggingIn,
       isRegistering,
-      isBannedModalOpen,
     }}>
       {children}
     </AuthContext.Provider>

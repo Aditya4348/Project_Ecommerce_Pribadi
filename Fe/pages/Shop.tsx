@@ -1,48 +1,42 @@
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { Grid3X3, List, ChevronDown, ShoppingBag, Heart } from 'lucide-react';
 import { MOCK_PRODUCTS } from '../constants';
 import { Category, Product } from '../types';
+import { useProduct } from '@/context/ProductContext';
+import { formatRupiah } from '@/helpers/Formatings';
 
 interface ShopProps {
   onAddToCart: (product: Product) => void;
 }
 
 const Shop: React.FC<ShopProps> = ({ onAddToCart }) => {
-  const [selectedCategory, setSelectedCategory] = useState<Category | 'All'>('All');
-  const [sortBy, setSortBy] = useState<'featured' | 'price-low' | 'price-high' | 'rating'>('featured');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
+  const { products, loading, error, sort, setSort, Category: selectedCategory, setCategory } = useProduct();
 
-  const filteredProducts = useMemo(() => {
-    let result = [...MOCK_PRODUCTS];
-    if (selectedCategory !== 'All') {
-      result = result.filter(p => p.category === selectedCategory);
-    }
+  if(loading){
+    return <div>Loading...</div>
+  }
 
-    switch (sortBy) {
-      case 'price-low': result.sort((a, b) => a.price - b.price); break;
-      case 'price-high': result.sort((a, b) => b.price - a.price); break;
-      case 'rating': result.sort((a, b) => b.rating - a.rating); break;
-      default: result.sort((a, b) => (b.featured ? 1 : 0) - (a.featured ? 1 : 0));
-    }
+  if(error){
+    return <div>Error: {error}</div>
+  }
 
-    return result;
-  }, [selectedCategory, sortBy]);
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12 animate-in fade-in slide-in-from-bottom-4 duration-700">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 md:gap-8 mb-8 md:mb-12">
         <div>
           <h1 className="text-3xl md:text-4xl font-bold text-slate-900 tracking-tight">Catalog</h1>
-          <p className="text-slate-500 mt-1 md:mt-2 text-sm md:text-base">Showing {filteredProducts.length} premium selections</p>
+          <p className="text-slate-500 mt-1 md:mt-2 text-sm md:text-base">Showing {products.length} premium selections</p>
         </div>
 
         <div className="flex flex-wrap items-center gap-3 md:gap-4">
           <div className="relative group flex-1 sm:flex-none">
             <select 
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value as any)}
+              value={sort}
+              onChange={(e) => setSort(e.target.value as any)}
               className="appearance-none bg-white border border-slate-200 px-4 md:px-6 py-2.5 md:py-3 pr-10 md:pr-12 rounded-xl text-xs md:text-sm font-semibold focus:outline-none focus:ring-2 focus:ring-emerald-500 cursor-pointer w-full"
             >
               <option value="featured">Sort by: Featured</option>
@@ -79,7 +73,7 @@ const Shop: React.FC<ShopProps> = ({ onAddToCart }) => {
               {['All', ...Object.values(Category)].map(cat => (
                 <button
                   key={cat}
-                  onClick={() => setSelectedCategory(cat as any)}
+                  onClick={() => setCategory(cat as any)}
                   className={`block w-full text-left px-4 py-2.5 md:py-3 rounded-xl text-xs md:text-sm font-medium transition-all ${
                     selectedCategory === cat 
                       ? 'bg-emerald-600 text-white shadow-lg shadow-emerald-100' 
@@ -116,13 +110,13 @@ const Shop: React.FC<ShopProps> = ({ onAddToCart }) => {
         {/* Product Grid */}
         <div className="flex-1">
           <div className={`grid ${viewMode === 'grid' ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3' : 'grid-cols-1'} gap-6 md:gap-8`}>
-            {filteredProducts.map(product => (
+            {products.map(product => (
               <div key={product.id} className={`group bg-white rounded-2xl md:rounded-[2rem] overflow-hidden shadow-sm hover:shadow-xl transition-all duration-500 ${viewMode === 'list' ? 'flex flex-col sm:flex-row gap-4 md:gap-8' : ''}`}>
                 <Link 
                   to={`/product/${product.id}`} 
                   className={`block relative overflow-hidden bg-slate-50 ${viewMode === 'list' ? 'w-full sm:w-48 md:w-64 h-48 md:h-64 flex-shrink-0' : 'aspect-square'}`}
                 >
-                  <img src={product.image} alt={product.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
+                  <img src={product.images[0]} alt={product.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" />
                   {product.featured && (
                     <div className="absolute top-4 left-4 bg-slate-900 text-white text-[9px] md:text-[10px] font-bold px-2 py-1 rounded-full uppercase">
                       Premium Choice
@@ -132,12 +126,12 @@ const Shop: React.FC<ShopProps> = ({ onAddToCart }) => {
 
                 <div className={`p-6 md:p-8 ${viewMode === 'list' ? 'flex-1 flex flex-col justify-center' : ''}`}>
                   <div className="mb-4">
-                    <p className="text-[9px] md:text-[10px] text-emerald-600 font-bold uppercase mb-1">{product.category}</p>
+                    <p className="text-[9px] md:text-[10px] text-emerald-600 font-bold uppercase mb-1">{product.category?.name ?? '-'}</p>
                     <h3 className="text-lg md:text-xl font-bold text-slate-900 group-hover:text-emerald-600 transition-colors">
                       {product.name}
                     </h3>
                   </div>
-                  <p className="text-xl md:text-2xl font-bold text-slate-900 mb-5 md:mb-6">${product.price}</p>
+                  <p className="text-xl md:text-2xl font-bold text-slate-900 mb-5 md:mb-6">{formatRupiah(product.price)}</p>
                   <div className="flex items-center gap-3 md:gap-4">
                     <button 
                       onClick={() => onAddToCart(product)}
@@ -154,11 +148,11 @@ const Shop: React.FC<ShopProps> = ({ onAddToCart }) => {
             ))}
           </div>
 
-          {filteredProducts.length === 0 && (
+          {products.length === 0 && (
             <div className="text-center py-24 space-y-4">
               <p className="text-slate-400 text-base md:text-lg">No products found matching your criteria.</p>
               <button 
-                onClick={() => setSelectedCategory('All')}
+                onClick={() => setCategory('All')}
                 className="text-emerald-600 font-bold hover:underline text-sm md:text-base"
               >
                 Clear all filters

@@ -3,6 +3,7 @@ import ReactDOM from "react-dom/client";
 import App from "./App";
 import { LanguageProvider } from "./context/LanguageContext";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ProductProvider } from "./context/ProductContext";
 
 const rootElement = document.getElementById("root");
 if (!rootElement) {
@@ -16,7 +17,9 @@ root.render(
   <React.StrictMode>
     <LanguageProvider>
       <QueryClientProvider client={queryClient}>
-        <App />
+        <ProductProvider>
+          <App />
+        </ProductProvider>
       </QueryClientProvider>
     </LanguageProvider>
   </React.StrictMode>
