@@ -34,6 +34,8 @@ return new class extends Migration
             $table->timestamps();
         });
 
+        schema::create
+
 
     }
 

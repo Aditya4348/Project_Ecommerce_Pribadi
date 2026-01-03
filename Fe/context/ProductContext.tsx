@@ -12,6 +12,10 @@ interface ProductContextType {
   sort: string;
   setCategory: (val: string) => void;
   setSort: (val: string) => void;
+  minPrice: number | null;
+  maxPrice: number | null;
+  setMinPrice: (val: number | null) => void;
+  setMaxPrice: (val: number | null) => void;
 }
 
 const ProductContext = createContext<ProductContextType | undefined>(undefined);
@@ -57,6 +61,10 @@ export const ProductProvider: React.FC<{ children: ReactNode }> = ({
   sort,
   setCategory,
   setSort,
+  minPrice,
+  maxPrice,
+  setMinPrice,
+  setMaxPrice,
   };
 
   return (

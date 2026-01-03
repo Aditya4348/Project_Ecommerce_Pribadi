@@ -179,7 +179,7 @@ const Home: React.FC<HomeProps> = ({ onAddToCart }) => {
                         <Link to={`/product/${product.id}`}>{product.name}</Link>
                       </h3>
                     </div>
-                    <p className="font-bold text-slate-900 ml-2 text-xs md:text-base">${product.price}</p>
+                    <p className="font-bold text-slate-900 ml-2 text-xs md:text-base">{formatRupiah(product.price)}</p>
                   </div>
                   <button 
                     onClick={() => onAddToCart(product)}

@@ -1,10 +1,7 @@
 
-export enum Category {
-  ELECTRONICS = 'Electronics',
-  FASHION = 'Fashion',
-  HOME = 'Home & Living',
-  LUXURY = 'Luxury',
-  OUTDOOR = 'Outdoor'
+export interface Category {
+  id: number;
+  name: string;
 }
 
 /**
@@ -40,7 +37,7 @@ export interface Product {
   description: string;
   price: number;
   category: Category;
-  image: string;
+  images: string[];
   stock: number;
   sku: string;
   rating: number;
