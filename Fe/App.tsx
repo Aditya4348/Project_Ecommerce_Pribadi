@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import {
-  HashRouter as Router,
+  BrowserRouter as Router,
   Routes,
   Route,
   Link,
@@ -32,10 +32,18 @@ import Terms from "./pages/Terms";
 import ProductDetail from "./pages/ProductDetail";
 import Checkout from "./pages/Checkout";
 import AdminDashboard from "./pages/Admin/Dashboard";
+import LoginPage from "./pages/Auth/LoginPage";
+import RegisterPage from "./pages/Auth/RegisterPage";
+import ForgotPasswordPage from "./pages/Auth/ForgotPasswordPage";
+import VerifyOtpPage from "./pages/Auth/OTPVerify";
 import { CartItem, Product } from "./types";
 import { useTranslation } from "./context/LanguageContext";
 import { QueryClient } from "@tanstack/react-query";
 import { AuthProvider } from "./context/AuthContext";
+import Navbar from "./components/Menu/Navbar";
+import MenuMobile from "./components/Menu/MenuMobile";
+import Footer from "./components/Footer";
+import { ProductProvider } from "./context/ProductContext";
 
 // Helper component to scroll to top on route change with smooth behavior
 const ScrollToTop = () => {
@@ -117,183 +125,24 @@ const AppContent: React.FC = () => {
     <div className="flex flex-col min-h-screen">
       <ScrollToTop />
       {/* Navigation Bar */}
-      <nav
-        className={`fixed top-0 w-full z-[100] transition-all duration-500 ${
-          scrolled || isMenuOpen
-            ? "bg-white py-3 shadow-md border-b border-slate-100"
-            : "bg-transparent py-5"
-        }`}
-      >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center">
-            {/* Logo */}
-            <Link
-              to="/"
-              onClick={closeMenu}
-              className="flex items-center gap-2 group relative z-[110]"
-            >
-              <div
-                className={`w-8 h-8 md:w-10 md:h-10 rounded-lg flex items-center justify-center font-bold transition-all duration-300 ${
-                  scrolled || isMenuOpen
-                    ? "bg-slate-900 text-white"
-                    : "bg-white text-slate-900"
-                }`}
-              >
-                N
-              </div>
-              <span
-                className={`text-lg md:text-xl font-bold tracking-tight transition-colors duration-300 ${
-                  scrolled || isMenuOpen ? "text-slate-900" : "text-white"
-                }`}
-              >
-                NEXUS<span className="text-emerald-500">ELITE</span>
-              </span>
-            </Link>
-
-            {/* Desktop Nav */}
-            <div className="hidden lg:flex items-center space-x-8 text-[13px] font-semibold uppercase tracking-widest">
-              {menuItems.slice(0, 4).map((link) => (
-                <Link
-                  key={link.path}
-                  to={link.path}
-                  className={`transition-colors hover:text-emerald-500 ${
-                    scrolled ? "text-slate-600" : "text-white/90"
-                  }`}
-                >
-                  {link.name}
-                </Link>
-              ))}
-            </div>
-
-            {/* Actions */}
-            <div className="flex items-center space-x-1 md:space-x-3 relative z-[110]">
-              <button
-                className={`p-2 transition-colors ${
-                  scrolled || isMenuOpen ? "text-slate-500" : "text-white"
-                }`}
-              >
-                <Search className="w-5 h-5" />
-              </button>
-
-              <button
-                onClick={() => setIsAdmin(!isAdmin)}
-                className={`p-2 transition-colors ${
-                  isAdmin
-                    ? "text-emerald-500"
-                    : scrolled || isMenuOpen
-                    ? "text-slate-500"
-                    : "text-white"
-                }`}
-              >
-                <User className="w-5 h-5" />
-              </button>
-
-              <button
-                onClick={() => setIsCartOpen(true)}
-                className={`p-2 transition-colors relative ${
-                  scrolled || isMenuOpen ? "text-slate-500" : "text-white"
-                }`}
-              >
-                <ShoppingBag className="w-5 h-5" />
-                {cartCount > 0 && (
-                  <span className="absolute top-1 right-1 bg-emerald-500 text-white text-[9px] w-4 h-4 rounded-full flex items-center justify-center font-bold ring-1 ring-white">
-                    {cartCount}
-                  </span>
-                )}
-              </button>
-
-              <button
-                className={`lg:hidden p-2 rounded-lg transition-all duration-300 ${
-                  isMenuOpen
-                    ? "bg-slate-900 text-white"
-                    : scrolled
-                    ? "bg-slate-100 text-slate-600"
-                    : "bg-white/20 text-white"
-                }`}
-                onClick={() => setIsMenuOpen(!isMenuOpen)}
-              >
-                {isMenuOpen ? (
-                  <X className="w-6 h-6" />
-                ) : (
-                  <Menu className="w-6 h-6" />
-                )}
-              </button>
-            </div>
-          </div>
-        </div>
-      </nav>
+      <Navbar
+        scrolled={scrolled}
+        isMenuOpen={isMenuOpen}
+        setIsMenuOpen={setIsMenuOpen}
+        closeMenu={closeMenu}
+        setIsCartOpen={setIsCartOpen}
+        cartCount={cartCount}
+        menuItems={menuItems}
+      />
 
       {/* Mobile Menu */}
-      <div
-        className={`fixed inset-0 z-[90] lg:hidden transition-opacity duration-500 ${
-          isMenuOpen
-            ? "opacity-100 pointer-events-auto"
-            : "opacity-0 pointer-events-none"
-        }`}
-      >
-        <div
-          className="absolute inset-0 bg-slate-900/60 backdrop-blur-sm"
-          onClick={closeMenu}
-        />
-        <div
-          className={`absolute inset-y-0 right-0 w-[85%] max-w-sm bg-white shadow-2xl flex flex-col transition-transform duration-500 ease-out transform ${
-            isMenuOpen ? "translate-x-0" : "translate-x-full"
-          }`}
-        >
-          <div className="flex flex-col h-full pt-24 pb-8 px-6 overflow-y-auto">
-            <div className="space-y-1 mb-10">
-              {menuItems.map((link, idx) => (
-                <Link
-                  key={idx}
-                  to={link.path}
-                  onClick={closeMenu}
-                  className="group flex items-center justify-between p-4 rounded-2xl hover:bg-slate-50 transition-all border border-transparent hover:border-slate-100"
-                >
-                  <div className="space-y-0.5">
-                    <h2 className="text-xl md:text-2xl font-bold text-slate-900 group-hover:text-emerald-500 transition-colors">
-                      {link.name}
-                    </h2>
-                    <p className="text-[10px] text-slate-400 font-bold uppercase tracking-widest">
-                      {link.desc}
-                    </p>
-                  </div>
-                  <ChevronRight className="w-5 h-5 text-slate-200 group-hover:text-emerald-500 group-hover:translate-x-1 transition-all" />
-                </Link>
-              ))}
-            </div>
-
-            <div className="mt-auto space-y-6">
-              <div className="flex bg-slate-100 p-1 rounded-xl">
-                <button
-                  onClick={() => setLang("en")}
-                  className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all ${
-                    lang === "en"
-                      ? "bg-white text-slate-900 shadow-sm"
-                      : "text-slate-400"
-                  }`}
-                >
-                  English
-                </button>
-                <button
-                  onClick={() => setLang("id")}
-                  className={`flex-1 py-2 rounded-lg text-xs font-bold transition-all ${
-                    lang === "id"
-                      ? "bg-white text-slate-900 shadow-sm"
-                      : "text-slate-400"
-                  }`}
-                >
-                  Indonesia
-                </button>
-              </div>
-              <div className="flex justify-center gap-6 pt-4 border-t border-slate-100">
-                <Instagram className="w-5 h-5 text-slate-300" />
-                <Twitter className="w-5 h-5 text-slate-300" />
-                <Globe className="w-5 h-5 text-slate-300" />
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+      <MenuMobile
+        isMenuOpen={isMenuOpen}
+        closeMenu={closeMenu}
+        menuItems={menuItems}
+        lang={lang}
+        setLang={setLang}
+      />
 
       <main className="flex-1 flex flex-col relative">
         {isAdmin ? (
@@ -430,107 +279,8 @@ const AppContent: React.FC = () => {
         </div>
       )}
 
-      <footer className="bg-slate-900 text-slate-400 py-16 px-4 mt-auto">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-12 text-left">
-          <div className="space-y-6">
-            <Link to="/" className="flex items-center gap-2">
-              <div className="w-10 h-10 bg-white rounded-lg flex items-center justify-center text-slate-900 font-bold">
-                N
-              </div>
-              <span className="text-xl font-bold tracking-tight text-white uppercase">
-                Nexus Elite
-              </span>
-            </Link>
-            <p className="text-sm leading-relaxed font-light">
-              {lang === "en"
-                ? "Defining the standard of modern luxury e-commerce."
-                : "Menentukan standar e-commerce mewah modern."}
-            </p>
-          </div>
-          <div>
-            <h4 className="text-white font-bold mb-6 text-sm uppercase tracking-wider">
-              Explore
-            </h4>
-            <ul className="space-y-4 text-sm">
-              <li>
-                <Link
-                  to="/shop"
-                  className="hover:text-emerald-500 transition-colors"
-                >
-                  Catalog
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/collections"
-                  className="hover:text-emerald-500 transition-colors"
-                >
-                  {t.nav.collections}
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/about"
-                  className="hover:text-emerald-500 transition-colors"
-                >
-                  {t.nav.about}
-                </Link>
-              </li>
-            </ul>
-          </div>
-          <div>
-            <h4 className="text-white font-bold mb-6 text-sm uppercase tracking-wider">
-              Support
-            </h4>
-            <ul className="space-y-4 text-sm">
-              <li>
-                <Link
-                  to="/faq"
-                  className="hover:text-emerald-500 transition-colors"
-                >
-                  FAQ
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/contact"
-                  className="hover:text-emerald-500 transition-colors"
-                >
-                  {t.nav.contact}
-                </Link>
-              </li>
-            </ul>
-          </div>
-          <div>
-            <h4 className="text-white font-bold mb-6 text-sm uppercase tracking-wider">
-              Legal
-            </h4>
-            <ul className="space-y-4 text-sm">
-              <li>
-                <Link
-                  to="/privacy"
-                  className="hover:text-emerald-500 transition-colors"
-                >
-                  {t.nav.privacy}
-                </Link>
-              </li>
-              <li>
-                <Link
-                  to="/terms"
-                  className="hover:text-emerald-500 transition-colors"
-                >
-                  {t.nav.terms}
-                </Link>
-              </li>
-            </ul>
-          </div>
-        </div>
-        <div className="max-w-7xl mx-auto mt-16 pt-8 border-t border-slate-800 text-center">
-          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-slate-600">
-            © 2024 Nexus Elite Global
-          </p>
-        </div>
-      </footer>
+      {/* Footer */}
+      <Footer />
     </div>
   );
 };
@@ -539,7 +289,18 @@ const App: React.FC = () => {
   return (
     <Router>
       <AuthProvider>
-        <AppContent />
+        <ProductProvider>
+          <Routes>
+            {/* Rute otentikasi tanpa layout utama */}
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/register" element={<RegisterPage />} />
+            <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+            <Route path="/verify-otp" element={<VerifyOtpPage />} />
+
+            {/* Semua rute lain akan menggunakan AppContent sebagai layout */}
+            <Route path="/*" element={<AppContent />} />
+          </Routes>
+        </ProductProvider>
       </AuthProvider>
     </Router>
   );

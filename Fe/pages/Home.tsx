@@ -14,9 +14,8 @@ interface HomeProps {
 
 const Home: React.FC<HomeProps> = ({ onAddToCart }) => {
   const { t } = useTranslation();
-  const { products } = useProduct();
-  
-  console.log("products", products)
+  const { products, toggleFavorite } = useProduct();
+
   
 
   const featured = products
@@ -26,8 +25,10 @@ const Home: React.FC<HomeProps> = ({ onAddToCart }) => {
 
   // const images = JSON.parse(featured.images || newArrivals.images);
 
-  console.log("featured", featured);
-  console.log("newArrivals", newArrivals);
+  const handleToggleFavorite = (productSlug: string) => {
+    console.log("productSlug", productSlug);
+    toggleFavorite(productSlug);
+  };
 
   return (
     <div className="animate-in fade-in duration-700">
@@ -93,7 +94,7 @@ const Home: React.FC<HomeProps> = ({ onAddToCart }) => {
                       className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000" 
                     />
                   </Link>
-                  <button className="absolute top-4 right-4 p-2.5 bg-white/80 backdrop-blur-md rounded-full text-slate-400 hover:text-emerald-600 shadow-lg">
+                  <button onClick={() => handleToggleFavorite(product.slug)} className="absolute top-4 right-4 p-2.5 bg-white/80 backdrop-blur-md rounded-full text-slate-400 hover:text-emerald-600 shadow-lg">
                     <Heart className="w-4 h-4" />
                   </button>
                   <div className="absolute bottom-4 left-4 right-4 md:opacity-0 group-hover:opacity-100 transition-all duration-300">

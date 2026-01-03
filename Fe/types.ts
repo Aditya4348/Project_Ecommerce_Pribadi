@@ -25,6 +25,11 @@ export interface RegisterCredetials {
   address: string;
 }
 
+export interface VerifyOtpPayload {
+  otp: string;
+  email: string;
+}
+
 /**
  * Type Main Content
  * ---------------------

@@ -5,6 +5,7 @@ import { LanguageProvider } from "./context/LanguageContext";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ProductProvider } from "./context/ProductContext";
 import { Toaster } from "react-hot-toast";
+import { AuthProvider } from "./context/AuthContext";
 
 const rootElement = document.getElementById("root");
 if (!rootElement) {
@@ -18,10 +19,8 @@ root.render(
   <React.StrictMode>
     <LanguageProvider>
       <QueryClientProvider client={queryClient}>
-        <ProductProvider>
-          <App />
-          <Toaster position="top-center" />
-        </ProductProvider>
+        <App />
+        <Toaster position="top-center" />
       </QueryClientProvider>
     </LanguageProvider>
   </React.StrictMode>
