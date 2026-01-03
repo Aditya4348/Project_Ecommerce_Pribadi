@@ -106,9 +106,9 @@ class ProductController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Product $product, Request $request)
+    public function show(Product $product)
     {
-        $product = Product::findOrFail($request->slug);
+        $product->load(['review', 'productSpec:product_id,name,value']);
 
         return response()->json([
             'message' => 'Product fetched successfully',

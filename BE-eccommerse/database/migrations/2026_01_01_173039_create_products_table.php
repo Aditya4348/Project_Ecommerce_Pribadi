@@ -25,7 +25,16 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        Schema::create('review', function (Blueprint $table) {
+        Schema::create('product_specs', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('product_id')->constrained()->cascadeOnDelete();
+            $table->string('name');
+            $table->string('value');
+            $table->timestamps();
+        });
+
+
+        Schema::create('reviews', function (Blueprint $table) {
             $table->id();
             $table->foreignId('product_id')->constrained()->cascadeOnDelete();
             $table->foreignId('user_id')->constrained()->cascadeOnDelete();
@@ -51,5 +60,8 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('products');
+        Schema::dropIfExists('product_specs');
+        Schema::dropIfExists('review');
+        Schema::dropIfExists('favorites');
     }
 };

@@ -52,7 +52,6 @@ const Shop: React.FC<ShopProps> = ({ onAddToCart }) => {
   }, [debouncedMaxPrice, setMinPrice, setMaxPrice]);
 
   const handleToggleFavorite = (productSlug: string) => {
-    console.log("productSlug", productSlug);
     toggleFavorite(productSlug);
   };
 
@@ -272,7 +271,7 @@ const Shop: React.FC<ShopProps> = ({ onAddToCart }) => {
                         }`}
                       >
                         <Link
-                          to={`/product/${product.id}`}
+                          to={`/product/${product.slug}`}
                           className={`block relative overflow-hidden bg-slate-50 ${
                             viewMode === "list"
                               ? "w-full sm:w-48 md:w-64 h-48 md:h-64 flex-shrink-0"

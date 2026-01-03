@@ -29,6 +29,11 @@ class Product extends Model
         'updated_at' => 'datetime',
     ];
 
+    public function getRouteKeyName()
+    {
+        return 'slug';
+    }
+
     public function review()
     {
         return $this->hasMany(Review::class);
@@ -36,5 +41,10 @@ class Product extends Model
 
     public function favorite() {
         return $this->belongsToMany(User::class, 'favorites');
+    }
+
+    public function productSpec()
+    {
+        return $this->hasMany(ProductSpec::class);
     }
 }

@@ -165,7 +165,7 @@ const AppContent: React.FC = () => {
               <Route path="/privacy" element={<Privacy />} />
               <Route path="/terms" element={<Terms />} />
               <Route
-                path="/product/:id"
+                path="/product/:slug"
                 element={<ProductDetail onAddToCart={addToCart} />}
               />
               <Route

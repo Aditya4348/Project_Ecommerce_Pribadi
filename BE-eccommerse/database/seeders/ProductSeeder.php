@@ -3,6 +3,9 @@
 namespace Database\Seeders;
 
 use App\Models\Product;
+use App\Models\ProductSpec;
+use App\Models\Review;
+use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
@@ -65,8 +68,59 @@ class ProductSeeder extends Seeder
             ];
         }
         
-        foreach ($products as $product) {
-            Product::create($product);
+        // Pastikan ada user untuk review (ambil yang pertama atau buat baru)
+        $user = User::first() ?? User::factory()->create([
+            'name' => 'Reviewer User',
+            'email' => 'reviewer@example.com',
+        ]);
+
+        foreach ($products as $productData) {
+            $product = Product::create($productData);
+
+            // 1. Tambahkan Product Specs berdasarkan kategori
+            $categoryName = $productData['category']['name'];
+            $specs = [];
+
+            if ($categoryName === 'Sepatu') {
+                $specs = [
+                    ['name' => 'Material', 'value' => 'Canvas/Suede Premium'],
+                    ['name' => 'Sole', 'value' => 'Rubber Anti-Slip'],
+                    ['name' => 'Insole', 'value' => 'Memory Foam'],
+                ];
+            } elseif ($categoryName === 'Pakaian') {
+                $specs = [
+                    ['name' => 'Material', 'value' => 'Cotton Combed 30s'],
+                    ['name' => 'Fit', 'value' => 'Regular Fit'],
+                    ['name' => 'Care', 'value' => 'Machine Washable'],
+                ];
+            } elseif ($categoryName === 'Elektronik') {
+                $specs = [
+                    ['name' => 'Warranty', 'value' => '1 Year Official'],
+                    ['name' => 'Battery', 'value' => 'Long-lasting Li-ion'],
+                    ['name' => 'Connectivity', 'value' => 'Bluetooth 5.0 / USB-C'],
+                ];
+            } else {
+                $specs = [
+                    ['name' => 'Quality', 'value' => 'High Grade'],
+                    ['name' => 'Origin', 'value' => 'Imported'],
+                ];
+            }
+
+            foreach ($specs as $spec) {
+                ProductSpec::create([
+                    'product_id' => $product->id,
+                    'name' => $spec['name'],
+                    'value' => $spec['value'],
+                ]);
+            }
+
+            // 2. Tambahkan Review Dummy
+            Review::create([
+                'product_id' => $product->id,
+                'user_id' => $user->id,
+                'rating' => rand(4, 5),
+                'comment' => 'Produk sangat bagus! Kualitas materialnya terasa premium dan pengiriman sangat cepat. Sangat direkomendasikan.',
+            ]);
         }
     }
 }
