@@ -1,14 +1,15 @@
 import api from "@/services/api";
 import { Product } from "@/types";
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import React, { createContext, useContext, ReactNode, useState } from "react";
+import toast from "react-hot-toast";
 
 interface ProductContextType {
   products: Product[];
   loading: boolean;
   error: string | null;
   fetchProducts: () => Promise<void>;
-   category: string;
+  category: string;
   sort: string;
   setCategory: (val: string) => void;
   setSort: (val: string) => void;
@@ -25,7 +26,7 @@ export const ProductProvider: React.FC<{ children: ReactNode }> = ({
 }) => {
   const [category, setCategory] = useState("all");
   const [sort, setSort] = useState("featured");
-  
+
   const [minPrice, setMinPrice] = useState<number | null>(null);
   const [maxPrice, setMaxPrice] = useState<number | null>(null);
 
@@ -52,19 +53,39 @@ export const ProductProvider: React.FC<{ children: ReactNode }> = ({
     retry: 1,
   });
 
+  const { mutateAsync: toggleFavorite, isPending: isTogglingFavorite } =
+    useMutation({
+      mutationFn: async (productSlug: string) => {
+        const response = await api.post(`/products/${productSlug}/favorite`);
+        return response.data;
+      },
+      onSuccess: ({ product }) => {
+        refetch();
+        toast(`Produk ${product.name} berhasil ditambahkan ke favorite`);
+      },
+      onError: (error) => {
+        console.log("error dibagian:", error);
+        toast.error("Gagal menambahkan produk ke favorite");
+      },
+    });
+
   const value = {
     products: products ?? [],
     loading: isLoading,
     error: error ? (error as Error).message : null,
     refetchProducts: refetch, // ✅ ini baru benar
     category,
-  sort,
-  setCategory,
-  setSort,
-  minPrice,
-  maxPrice,
-  setMinPrice,
-  setMaxPrice,
+    sort,
+    setCategory,
+    setSort,
+    minPrice,
+    maxPrice,
+    setMinPrice,
+    setMaxPrice,
+
+    // Favorite togle
+    toggleFavorite,
+    isTogglingFavorite,
   };
 
   return (

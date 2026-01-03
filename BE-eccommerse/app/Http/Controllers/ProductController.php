@@ -16,7 +16,7 @@ class ProductController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Product::query()->select('id', 'name', 'description', 'price', 'category', 'images', 'featured');
+        $query = Product::query()->select('id', 'name', 'description', 'price', 'category', 'images', 'featured', 'slug');
 
         // Filter Berdasarkan Category
 
@@ -73,34 +73,18 @@ class ProductController extends Controller
     public function toggleFavorite(Request $request, $id)
     {
         $user = $request->user();
-
-        if (!$user) {
-            return response()->json(['message' => 'Unauthorized'], 401);
-        }
-
         $product = Product::findOrFail($id);
 
-        $exists = DB::table('favorites')
-            ->where('user_id', $user->id)
+        $user->favorites()->toggle($product->id);
+
+        $isFavorite = $user->favorites()
             ->where('product_id', $product->id)
             ->exists();
 
-        if ($exists) {
-            DB::table('favorites')
-                ->where('user_id', $user->id)
-                ->where('product_id', $product->id)
-                ->delete();
-            return response()->json(['message' => 'Product removed from favorites', 'is_favorite' => false]);
-        }
-
-        DB::table('favorites')->insert([
-            'user_id' => $user->id,
-            'product_id' => $product->id,
-            'created_at' => now(),
-            'updated_at' => now(),
+        return response()->json([
+            'message' => 'Favorite updated',
+            'is_favorite' => $isFavorite
         ]);
-
-        return response()->json(['message' => 'Product added to favorites', 'is_favorite' => true]);
     }
 
     /**

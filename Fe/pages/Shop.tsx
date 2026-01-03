@@ -40,7 +40,8 @@ const Shop: React.FC<ShopProps> = ({ onAddToCart }) => {
     Category: selectedCategory, 
     setCategory,
     setMinPrice,
-    setMaxPrice
+    setMaxPrice,
+    toggleFavorite,
   } = useProduct();
 
   // Efek untuk memperbarui filter harga pada perubahan nilai yang di-debounce
@@ -48,6 +49,12 @@ const Shop: React.FC<ShopProps> = ({ onAddToCart }) => {
     setMinPrice(0);
     setMaxPrice(debouncedMaxPrice);
   }, [debouncedMaxPrice, setMinPrice, setMaxPrice]);
+
+  const handleToggleFavorite = (productSlug: string) => {
+    console.log("productSlug", productSlug);
+    toggleFavorite(productSlug);
+  };
+
 
   const ProductSkeleton: React.FC<{ viewMode: 'grid' | 'list' }> = ({ viewMode }) => {
     if (viewMode === 'list') {
@@ -218,7 +225,7 @@ const Shop: React.FC<ShopProps> = ({ onAddToCart }) => {
                           >
                             <ShoppingBag className="w-3.5 h-3.5 md:w-4 h-4" /> Add to Cart
                           </button>
-                          <button className="p-3 border border-slate-100 rounded-xl hover:bg-slate-50 transition-colors">
+                          <button onClick={() => handleToggleFavorite(product.slug)} className="p-3 border border-slate-100 rounded-xl hover:bg-slate-50 transition-colors">
                             <Heart className="w-4 h-4 md:w-5 h-5 text-slate-400" />
                           </button>
                         </div>

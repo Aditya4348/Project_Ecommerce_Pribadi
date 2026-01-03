@@ -28,6 +28,7 @@ Route::group([
 });
 
 Route::middleware(['auth:api'])->group(function () {
+    Route::post('/products/{slug}/favorite', [ProductController::class, 'toggleFavorite']);
     Route::post('logout', [AuthController::class, 'logout']);
     Route::post('refresh', [AuthController::class, 'refresh']);
     Route::post('me', [AuthController::class, 'me']);

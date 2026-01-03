@@ -66,7 +66,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const { mutateAsync: register, isPending: isRegistering } = useMutation({
     mutationFn: apiClient.getAuthRegister,
-    onSuccess: (data) => {
+    onSuccess: (data) => {  
       // Pesan umum untuk registrasi yang berhasil.
       // Navigasi ditangani di dalam komponen (RegisterPage).
       toast.success('Registrasi berhasil. Silakan periksa email Anda untuk verifikasi.');

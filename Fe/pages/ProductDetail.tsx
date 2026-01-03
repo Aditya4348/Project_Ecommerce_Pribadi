@@ -2,7 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Star, Shield, Truck, RefreshCcw, ShoppingBag, Heart, Plus, Minus, Send, Sparkles } from 'lucide-react';
-import { MOCK_PRODUCTS } from '../constants';
+// import { MOCK_PRODUCTS } from '../constants';
 import { Product } from '../types';
 import { getProductAdvice } from '../services/geminiService';
 
@@ -21,14 +21,14 @@ const ProductDetail: React.FC<ProductDetailProps> = ({ onAddToCart }) => {
   const [aiResponse, setAiResponse] = useState<string | null>(null);
   const [isAiLoading, setIsAiLoading] = useState(false);
 
-  useEffect(() => {
-    const found = MOCK_PRODUCTS.find(p => p.id === id);
-    if (found) {
-      setProduct(found);
-    } else {
-      navigate('/shop');
-    }
-  }, [id, navigate]);
+  // useEffect(() => {
+  //   const found = MOCK_PRODUCTS.find(p => p.id === id);
+  //   if (found) {
+  //     setProduct(found);
+  //   } else {
+  //     navigate('/shop');
+  //   }
+  // }, [id, navigate]);
 
   const handleAiChat = async (e: React.FormEvent) => {
     e.preventDefault();

@@ -4,6 +4,7 @@ import App from "./App";
 import { LanguageProvider } from "./context/LanguageContext";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ProductProvider } from "./context/ProductContext";
+import { Toaster } from "react-hot-toast";
 
 const rootElement = document.getElementById("root");
 if (!rootElement) {
@@ -19,6 +20,7 @@ root.render(
       <QueryClientProvider client={queryClient}>
         <ProductProvider>
           <App />
+          <Toaster position="top-center" />
         </ProductProvider>
       </QueryClientProvider>
     </LanguageProvider>
