@@ -56,14 +56,6 @@ const Navbar = ({scrolled, isMenuOpen, setIsMenuOpen, closeMenu, setIsCartOpen, 
 
             {/* Actions */}
             <div className="flex items-center space-x-1 md:space-x-3 relative z-[110]">
-              <button
-                className={`p-2 transition-colors ${
-                  scrolled || isMenuOpen ? "text-slate-500" : "text-white"
-                }`}
-              >
-                <Search className="w-5 h-5" />
-              </button>
-
               <Link
                 to="/login"
                 className={`p-2 transition-colors ${

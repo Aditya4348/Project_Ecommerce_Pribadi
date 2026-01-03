@@ -2,7 +2,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowRight, Star, ShieldCheck, Zap, Globe, Heart, ShoppingBag } from 'lucide-react';
-import { MOCK_PRODUCTS } from '../constants';
 import { Product } from '../types';
 import { useTranslation } from '../context/LanguageContext';
 import { useProduct } from '@/context/ProductContext';
