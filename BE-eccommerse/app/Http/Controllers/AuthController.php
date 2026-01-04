@@ -9,14 +9,10 @@ use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 
 class AuthController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware('auth:api', ['except' => ['login', 'register', 'verifyRegistration', 'forgotPassword', 'resetPassword']]);
-    }
-
     /**
      * Inscription d'un nouvel utilisateur avec envoi d'OTP
      */
@@ -68,7 +64,7 @@ class AuthController extends Controller
         }
 
         $user = User::where('email', $request->email)->first();
-        
+
         if (!$user->email_verified_at) {
             $user->email_verified_at = now();
             $user->save();
@@ -76,7 +72,7 @@ class AuthController extends Controller
 
         Cache::forget('otp_register_' . $request->email);
 
-        $token = Auth::login($user);
+        $token = auth()->login($user);
 
         return $this->respondWithToken($token);
     }
@@ -95,13 +91,13 @@ class AuthController extends Controller
             return response()->json($validator->errors(), 422);
         }
 
-        if (! $token = Auth::attempt($validator->validated())) {
+        if (! $token = auth()->attempt($validator->validated())) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
 
         // Vérifier si l'email est vérifié
-        if (Auth::user()->email_verified_at === null) {
-            Auth::logout();
+        if (auth()->user()->email_verified_at === null) {
+            auth()->logout();
             return response()->json(['error' => 'Email not verified. Please verify your account.'], 403);
         }
 
@@ -177,18 +173,23 @@ class AuthController extends Controller
 
     public function me()
     {
-        return response()->json(Auth::user());
+
+        Log::info("user". auth()->user());
+
+
+
+        return response()->json(Auth::guard('api')->user());
     }
 
     public function logout()
     {
-        Auth::logout();
+        auth()->logout();
         return response()->json(['message' => 'Successfully logged out']);
     }
 
     public function refresh()
     {
-        return $this->respondWithToken(Auth::refresh());
+        return $this->respondWithToken(auth()->refresh());
     }
 
     protected function respondWithToken($token)
@@ -196,8 +197,8 @@ class AuthController extends Controller
         return response()->json([
             'access_token' => $token,
             'token_type' => 'bearer',
-            'expires_in' => Auth::factory()->getTTL() * 60,
-            'user' => Auth::user()
+            'expires_in' => auth()->factory()->getTTL() * 60,
+            'user' => auth()->user()
         ]);
     }
 }

@@ -12,7 +12,7 @@ interface VerifyOtpPayload {
 }
 
 export const getAuthUser = async () => {
-  const { data } = await api.get('/auth/user');
+  const { data } = await api.get('/user');
   return data;
 }
 

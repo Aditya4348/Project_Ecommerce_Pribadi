@@ -28,9 +28,16 @@ Route::group([
     Route::post('reset-password', [AuthController::class, 'resetPassword']);
 });
 
-Route::middleware(['auth:api'])->group(function () {
+Route::middleware('auth:api')->get('/user', [AuthController::class, 'me']);
+
+Route::middleware(['auth:api, role:customer'])->group(function () {
     Route::post('/products/{slug}/favorite', [ProductController::class, 'toggleFavorite']);
     Route::post('logout', [AuthController::class, 'logout']);
     Route::post('refresh', [AuthController::class, 'refresh']);
-    Route::post('me', [AuthController::class, 'me']);
+});
+
+Route::middleware(['auth:api, role:admin'])->group(function () {
+    Route::post('products', [ProductController::class, 'store']);
+    Route::put('products/{slug}', [ProductController::class, 'update']);
+    Route::delete('products/{slug}', [ProductController::class, 'destroy']);
 });

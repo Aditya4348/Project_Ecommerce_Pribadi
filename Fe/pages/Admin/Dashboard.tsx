@@ -30,12 +30,14 @@ import {
   Settings
 } from 'lucide-react';
 import { SALES_CHART_DATA } from '../../constants';
+import { QueryClient } from '@tanstack/react-query';
 
 interface AdminDashboardProps {
   onExit: () => void;
 }
 
 const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
+
   const stats = [
     { label: 'Total Revenue', value: '$124,592.00', trend: '+12.5%', isUp: true, icon: DollarSign },
     { label: 'Total Orders', value: '1,240', trend: '+5.2%', isUp: true, icon: ShoppingBag },
@@ -44,42 +46,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
   ];
 
   return (
-    <div className="min-h-screen bg-slate-50 flex">
-      {/* Sidebar */}
-      <aside className="w-64 bg-white border-r border-slate-200 hidden lg:flex flex-col">
-        <div className="p-8 border-b border-slate-100 flex items-center gap-2">
-          <div className="w-8 h-8 bg-slate-900 rounded-lg flex items-center justify-center text-white font-bold">N</div>
-          <span className="font-bold text-slate-900 uppercase tracking-widest text-sm">Nexus Admin</span>
-        </div>
-        <nav className="flex-1 p-6 space-y-2">
-          <button className="flex items-center gap-3 w-full px-4 py-3 bg-slate-900 text-white rounded-xl font-medium shadow-lg shadow-slate-200">
-            <PieChart className="w-5 h-5" /> Dashboard
-          </button>
-          <button className="flex items-center gap-3 w-full px-4 py-3 text-slate-600 hover:bg-slate-50 rounded-xl font-medium transition-colors">
-            <ShoppingBag className="w-5 h-5" /> Orders
-          </button>
-          <button className="flex items-center gap-3 w-full px-4 py-3 text-slate-600 hover:bg-slate-50 rounded-xl font-medium transition-colors">
-            <Package className="w-5 h-5" /> Products
-          </button>
-          <button className="flex items-center gap-3 w-full px-4 py-3 text-slate-600 hover:bg-slate-50 rounded-xl font-medium transition-colors">
-            <Users className="w-5 h-5" /> Customers
-          </button>
-          <button className="flex items-center gap-3 w-full px-4 py-3 text-slate-600 hover:bg-slate-50 rounded-xl font-medium transition-colors">
-            <Settings className="w-5 h-5" /> Settings
-          </button>
-        </nav>
-        <div className="p-6 border-t border-slate-100">
-          <button 
-            onClick={onExit}
-            className="flex items-center gap-3 w-full px-4 py-3 text-red-500 hover:bg-red-50 rounded-xl font-medium transition-colors"
-          >
-            <LogOut className="w-5 h-5" /> Exit Admin
-          </button>
-        </div>
-      </aside>
-
-      {/* Main Panel */}
-      <main className="flex-1 overflow-y-auto p-8 lg:p-12">
+    <>
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-12">
           <div>
             <h1 className="text-3xl font-bold text-slate-900">System Overview</h1>
@@ -218,8 +185,7 @@ const AdminDashboard: React.FC<AdminDashboardProps> = ({ onExit }) => {
             </table>
           </div>
         </div>
-      </main>
-    </div>
+    </>
   );
 };
 

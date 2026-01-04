@@ -5,6 +5,7 @@ import {
   Route,
   Link,
   useLocation,
+  useNavigate,
 } from "react-router-dom";
 import {
   ShoppingBag,
@@ -39,11 +40,13 @@ import VerifyOtpPage from "./pages/Auth/OTPVerify";
 import { CartItem, Product } from "./types";
 import { useTranslation } from "./context/LanguageContext";
 import { QueryClient } from "@tanstack/react-query";
-import { AuthProvider } from "./context/AuthContext";
+import { AuthProvider, useAuth } from "./context/AuthContext";
 import Navbar from "./components/Menu/Navbar";
 import MenuMobile from "./components/Menu/MenuMobile";
 import Footer from "./components/Footer";
 import { ProductProvider } from "./context/ProductContext";
+import AdminRoute from "./pages/Admin/AdminRoute";
+import AdminLayout from "./layouts/AdminLayout";
 
 // Helper component to scroll to top on route change with smooth behavior
 const ScrollToTop = () => {
@@ -68,6 +71,7 @@ const AppContent: React.FC = () => {
   const [isAdmin, setIsAdmin] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
+
   const menuItems = [
     { name: "Home", path: "/", desc: "Welcome" },
     { name: "Shop", path: "/shop", desc: "Catalog" },
@@ -79,6 +83,7 @@ const AppContent: React.FC = () => {
     { name: t.nav?.about || "About", path: "/about", desc: "Story" },
     { name: t.nav?.contact || "Contact", path: "/contact", desc: "Support" },
   ];
+
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
@@ -145,12 +150,9 @@ const AppContent: React.FC = () => {
       />
 
       <main className="flex-1 flex flex-col relative">
-        {isAdmin ? (
-          <div className="pt-20">
-            <AdminDashboard onExit={() => setIsAdmin(false)} />
-          </div>
-        ) : (
-          /* KEY is critical here to trigger animation on route change */
+        
+          
+          {/* KEY is critical here to trigger animation on route change  */}
           <div
             key={location.pathname}
             className="page-transition-wrapper flex-1 flex flex-col"
@@ -174,7 +176,6 @@ const AppContent: React.FC = () => {
               />
             </Routes>
           </div>
-        )}
       </main>
 
       {/* Cart Drawer */}
@@ -299,6 +300,15 @@ const App: React.FC = () => {
 
             {/* Semua rute lain akan menggunakan AppContent sebagai layout */}
             <Route path="/*" element={<AppContent />} />
+
+            {/* Admin Route */}
+            <Route 
+                path="/admin/dashboard" 
+                element={
+                  <AdminLayout>
+                    <AdminDashboard />
+                  </AdminLayout>
+              }/>
           </Routes>
         </ProductProvider>
       </AuthProvider>

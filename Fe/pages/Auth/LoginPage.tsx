@@ -2,15 +2,24 @@ import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Mail, Lock, ArrowRight, Github, Chrome, ArrowLeft } from "lucide-react";
 import { useTranslation } from "../../context/LanguageContext";
+import { useAuth } from "@/context/AuthContext";
 
 const LoginPage: React.FC = () => {
   const { lang, t } = useTranslation();
-  const navigate = useNavigate();
+  const { login, isLoggingIn } = useAuth();
+  
+  // State Auth Login
+  const [ email, setEmail ] = React.useState('');
+  const [ password, setPassword ] = React.useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Simulate login
-    navigate("/");
+
+    await login({
+      email,
+      password
+    })
   };
 
   return (
@@ -46,6 +55,8 @@ const LoginPage: React.FC = () => {
                 <input
                   type="email"
                   required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
                   className="w-full bg-slate-50 border-none rounded-xl pl-12 pr-4 py-4 text-sm focus:ring-2 focus:ring-emerald-500 transition-all"
                   placeholder="name@company.com"
                 />
@@ -69,6 +80,8 @@ const LoginPage: React.FC = () => {
                 <input
                   type="password"
                   required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
                   className="w-full bg-slate-50 border-none rounded-xl pl-12 pr-4 py-4 text-sm focus:ring-2 focus:ring-emerald-500 transition-all"
                   placeholder="••••••••"
                 />

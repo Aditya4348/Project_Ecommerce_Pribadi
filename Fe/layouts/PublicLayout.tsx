@@ -1,0 +1,6 @@
+const PublicLayout = ({children}) => {
+    
+    return(
+        
+    )
+}

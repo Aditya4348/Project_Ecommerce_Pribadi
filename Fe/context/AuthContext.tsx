@@ -28,20 +28,20 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const { data: user, isLoading: loading } = useQuery<User | null>({
     queryKey: ['user'],
     queryFn: async () => {
-      const token = localStorage.getItem('token');
+      const token = localStorage.getItem('auth_token');
       if (!token) return null;
       try {
-        api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
         const fetchedUser = await apiClient.getAuthUser();
         if (!fetchedUser.roles || fetchedUser.roles.length === 0) {
           fetchedUser.roles = [fetchedUser.current_role];
         }
+        console.error('fetching user:', fetchedUser);
         return fetchedUser;
       } catch (error) {
         // Tangani error di sini, misalnya token tidak valid
-        localStorage.removeItem('token');
-        delete api.defaults.headers.common['Authorization'];
+        localStorage.removeItem('auth_token');
         queryClient.setQueryData(['user'], null);
+        console.error('Error fetching user:', error);
         return null; // Kembalikan null jika fetch gagal
       }
     },
@@ -53,11 +53,20 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     mutationFn: apiClient.getAuthLogin,
     onSuccess: ({ user: loggedInUser, token }) => {
       localStorage.setItem('token', token);
-      api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
       // Simpan data user utama ke cache
       queryClient.setQueryData(['user'], loggedInUser);
-      toast.success('Login berhasil');
-      navigate('/');
+
+      console.log("loggedInUser",loggedInUser);
+      
+      if(loggedInUser.role === 'admin'){
+        navigate('/admin/dashboard');
+        toast.success('Login Berhasil, Selamat Datang Admin')
+      }else{
+        navigate('/');
+        toast.success('Login Berhasil, Nikmati berbagai Kemudahan Sebagai User')
+      }
+
+      
     },
     onError: (error) => {
       toast.error('Login gagal. Silakan coba lagi.');
