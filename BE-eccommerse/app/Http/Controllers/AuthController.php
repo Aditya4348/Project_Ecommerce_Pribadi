@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use app\Models\User;
+use App\Models\User;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
@@ -157,7 +157,7 @@ class AuthController extends Controller
      */
     protected function sendOtp($email, $prefix)
     {
-        $otp = rand(100000, 999999);
+        $otp = random_int(100000, 999999);
         // Stocker l'OTP dans le cache pour 10 minutes
         Cache::put($prefix . $email, $otp, now()->addMinutes(10));
 
@@ -173,10 +173,7 @@ class AuthController extends Controller
 
     public function me()
     {
-
-        Log::info("user". auth()->user());
-
-
+        Log::info("user fetched", ['user' => auth()->user()]);
 
         return response()->json(Auth::guard('api')->user());
     }

@@ -1,6 +1,6 @@
 import React, { createContext, useContext, ReactNode, useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { User, LoginCredentials, RegisterCredetials } from '../types';
+import { User, LoginCredentials, RegisterCredetials, VerifyRegistrationCredentials } from '../types';
 import  * as apiClient  from '../services/api/authApi';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
@@ -11,11 +11,13 @@ interface AuthContextType {
   loading: boolean;
   login: (credentials: LoginCredentials) => Promise<void>;
   register: (details: RegisterCredetials) => Promise<void>;
+  verifyRegistration: (credentials: VerifyRegistrationCredentials) => Promise<void>;
   logout: () => void;
   updateUser: (newUser: User) => void;
   setUserAndToken: (user: User, token: string) => void;
   isLoggingIn: boolean;
   isRegistering: boolean;
+  isVerifying: boolean;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -32,10 +34,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       if (!token) return null;
       try {
         const fetchedUser = await apiClient.getAuthUser();
-        if (!fetchedUser.roles || fetchedUser.roles.length === 0) {
-          fetchedUser.roles = [fetchedUser.current_role];
-        }
-        console.error('fetching user:', fetchedUser);
         return fetchedUser;
       } catch (error) {
         // Tangani error di sini, misalnya token tidak valid
@@ -51,12 +49,10 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   const { mutateAsync: login, isPending: isLoggingIn } = useMutation({
     mutationFn: apiClient.getAuthLogin,
-    onSuccess: ({ user: loggedInUser, token }) => {
-      localStorage.setItem('token', token);
+    onSuccess: ({ user: loggedInUser, auth_token }) => {
+      localStorage.setItem('auth_token', auth_token);
       // Simpan data user utama ke cache
       queryClient.setQueryData(['user'], loggedInUser);
-
-      console.log("loggedInUser",loggedInUser);
       
       if(loggedInUser.role === 'admin'){
         navigate('/admin/dashboard');
@@ -69,7 +65,15 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       
     },
     onError: (error) => {
-      toast.error('Login gagal. Silakan coba lagi.');
+      // @ts-ignore
+      if (error.response && error.response.status === 403) {
+        toast.error('Email belum terverifikasi. Silakan periksa email Anda.');
+      // @ts-ignore
+      } else if (error.response && error.response.status === 401) {
+        toast.error('Email atau password salah.');
+      } else {
+        toast.error('Login gagal. Silakan coba lagi.');
+      }
     }
   });
 
@@ -77,11 +81,31 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     mutationFn: apiClient.getAuthRegister,
     onSuccess: (data) => {  
       // Pesan umum untuk registrasi yang berhasil.
-      // Navigasi ditangani di dalam komponen (RegisterPage).
+      // Navigasi ke halaman verifikasi OTP ditangani di dalam komponen RegisterPage.
       toast.success('Registrasi berhasil. Silakan periksa email Anda untuk verifikasi.');
     },
     onError: (error) => {
       toast.error('Registrasi gagal. Silakan coba lagi.');
+    }
+  });
+
+  // Mutasi baru untuk verifikasi OTP setelah registrasi
+  const { mutateAsync: verifyRegistration, isPending: isVerifying } = useMutation({
+    mutationFn: apiClient.verifyRegistration, // Anda perlu membuat fungsi ini di apiClient
+    onSuccess: ({ user: verifiedUser, access_token }) => {
+      localStorage.setItem('auth_token', access_token);
+      queryClient.setQueryData(['user'], verifiedUser);
+      
+      if (verifiedUser.role === 'admin') {
+        navigate('/admin/dashboard');
+        toast.success('Verifikasi Berhasil, Selamat Datang Admin');
+      } else {
+        navigate('/');
+        toast.success('Verifikasi Berhasil, Selamat Datang!');
+      }
+    },
+    onError: (error) => {
+      toast.error('Verifikasi gagal. OTP tidak valid atau sudah kedaluwarsa.');
     }
   });
 
@@ -92,7 +116,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     } catch (error) {
       console.error("Logout failed on server, but logging out client-side.", error);
     } finally {
-      localStorage.removeItem('token');
+      localStorage.removeItem('auth_token');
       delete api.defaults.headers.common['Authorization']; // Sembunyikan modal saat logout
       queryClient.clear(); // Membersihkan semua cache saat logout
       toast.success('Logout Berhasil');
@@ -104,18 +128,24 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     queryClient.setQueryData(['user'], newUser);
   };
 
+  const setUserAndToken = (user: User, token: string) => {
+    localStorage.setItem('auth_token', token);
+    queryClient.setQueryData(['user'], user);
+  };
 
   return (
     <AuthContext.Provider value={{ 
       user: user || null,
-      current_role: user || null,
       loading,
       login,
       register,
+      verifyRegistration,
       logout,
       updateUser,
+      setUserAndToken,
       isLoggingIn,
       isRegistering,
+      isVerifying,
     }}>
       {children}
     </AuthContext.Provider>

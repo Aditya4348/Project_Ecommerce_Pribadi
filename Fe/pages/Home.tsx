@@ -6,6 +6,7 @@ import { Product } from '../types';
 import { useTranslation } from '../context/LanguageContext';
 import { useProduct } from '@/context/ProductContext';
 import { formatRupiah } from '@/helpers/Formatings';
+import { useAuth } from '@/context/AuthContext';
 
 interface HomeProps {
   onAddToCart: (product: Product) => void;
@@ -13,9 +14,10 @@ interface HomeProps {
 
 const Home: React.FC<HomeProps> = ({ onAddToCart }) => {
   const { t } = useTranslation();
+  const { user } = useAuth(); 
   const { products, toggleFavorite } = useProduct();
 
-  
+  console.log('user', user);
 
   const featured = products
   .filter(p => p.featured === true)
